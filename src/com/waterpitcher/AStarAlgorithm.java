@@ -11,18 +11,23 @@ public class AStarAlgorithm {
         this.input = input;
     }
 
+    // Heuristic Function for getting the estimated cost from the current state to the goal test.
+    public int estimateHeuristic(int current) {
+        return (int) ((Math.abs(input.getTarget() - current)) / input.getAvgCapacity());
+    }
+
     public int findMinStepsUsingAStar() {
         if (input.getTarget() % calculateTotalGCD() != 0) {
-            return -1;
+            return -1; // No solution
         }
 
         int numPitchers = input.getCapacity().size();
 
         PitchersState initialState = new PitchersState(numPitchers + 1);
 
-        java.util.PriorityQueue<PriorityQueue> priorityQueue = new java.util.PriorityQueue<>();
+        java.util.PriorityQueue<PitchersState.PriorityQueue> priorityQueue = new java.util.PriorityQueue<>();
 
-        priorityQueue.add(new PriorityQueue(0, initialState));
+        priorityQueue.add(new PitchersState.PriorityQueue(0, initialState));
 
         Map<PitchersState, Integer> minStepsMap = new HashMap<>();
 
@@ -34,11 +39,13 @@ public class AStarAlgorithm {
                 return minStepsMap.get(currentContainer.getPitcherState());
             }
 
+            // Cost function, from start state to current state
             int newCost = minStepsMap.get(currentContainer.getPitcherState()) + 1;
 
+            //State: Transfer the water from one pitcher to another or to the infinite pitcher
             for (int i = 0; i <= numPitchers; i++) {
                 for (int j = 0; j <= numPitchers; j++) {
-                    if (i == j) continue;
+                    if (i == j) continue; // same pitchers, ignore
                     PitchersState nextState = new PitchersState(currentContainer.getPitcherState());
                     int x = nextState.getPitchers().get(i);
                     int y = nextState.getPitchers().get(j);
@@ -48,25 +55,22 @@ public class AStarAlgorithm {
 
                     if (!minStepsMap.containsKey(nextState) || newCost < minStepsMap.get(nextState)) {
                         minStepsMap.put(nextState, newCost);
-                        priorityQueue.add(new PriorityQueue(newCost + estimateHeuristic(nextState.getLastElement()), nextState));
+                        priorityQueue.add(new PitchersState.PriorityQueue(newCost + estimateHeuristic(nextState.getLastElement()), nextState));
                     }
                 }
             }
 
+            //State: Filling the water pitcher
             for (int i = 0; i < numPitchers; i++) {
                 PitchersState nextState = new PitchersState(currentContainer.getPitcherState());
                 nextState.getPitchers().set(i, input.getCapacity().get(i));
                 if (!minStepsMap.containsKey(nextState) || newCost < minStepsMap.get(nextState)) {
                     minStepsMap.put(nextState, newCost);
-                    priorityQueue.add(new PriorityQueue(newCost + estimateHeuristic(nextState.getLastElement()), nextState));
+                    priorityQueue.add(new PitchersState.PriorityQueue(newCost + estimateHeuristic(nextState.getLastElement()), nextState));
                 }
             }
         }
         return -1;
-    }
-
-    public int estimateHeuristic(int current) {
-        return (int) ((Math.abs(input.getTarget() - current)) / input.getAvgCapacity());
     }
 
     public int calculateGCD(int a, int b) {

@@ -8,7 +8,7 @@ public class Main {
 
         try {
             // Specify the file path
-            String filePath = "/home/princenoahjohnson/Desktop/Solution/src/com/waterpitcher/input.txt";
+            String filePath = "//home/princenoahjohnson/Desktop/GW/Artificial Intelligence_CSCI_6511_DE1/Projects/Project 1/src/com/waterpitcher/input.txt";
 
             // Read input from the file using the Reader Class
             var inputContent = Reader.getInput(filePath);

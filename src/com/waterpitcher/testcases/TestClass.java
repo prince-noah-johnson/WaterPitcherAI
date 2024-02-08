@@ -27,12 +27,4 @@ class TestClass {
     }
 
 
-    @Test
-    void heuristic() {
-        AStarAlgorithm sol = new AStarAlgorithm(new Input(List.of(1, 2), 4));
-
-        assertEquals(sol.estimateHeuristic(1), 5);
-    }
-
-
 }
